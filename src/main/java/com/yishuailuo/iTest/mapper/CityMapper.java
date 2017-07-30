@@ -1,10 +1,7 @@
 package com.yishuailuo.iTest.mapper;
 
 import com.yishuailuo.iTest.entity.City;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -13,10 +10,11 @@ import java.util.List;
  */
 public interface CityMapper {
 
-    @Insert("insert into city (name, `desc`) values (#{name}, #{desc})")
+    @Insert("insert into city (name, area, pop) values (#{name}, #{area}, #{pop})")
+    @Options(useGeneratedKeys = true)
     Integer add(City city);
 
-    @Update("update city set name = #{name}, `desc`=#{desc} where id = #{id}")
+    @Update("update city set name = #{name}, area = #{area}, pop=#{pop} where id = #{id}")
     Integer update(City city);
 
     @Delete("delete from city where id = #{id}")

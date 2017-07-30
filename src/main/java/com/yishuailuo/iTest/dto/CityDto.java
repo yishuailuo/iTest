@@ -1,29 +1,34 @@
-package com.yishuailuo.iTest.entity;
+package com.yishuailuo.iTest.dto;
 
-import com.yishuailuo.iTest.dto.CityDto;
+import com.yishuailuo.iTest.entity.City;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.constraints.Min;
 
 /**
- * Created by luoyishuai on 17/7/29.
+ * Created by luoyishuai on 17/7/30.
  */
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@Accessors(chain = true)
-public class City {
+@AllArgsConstructor
+public class CityDto {
 
     private Integer id;
+
+    @NotEmpty
     private String name;
+    @Min(1)
     private Integer area;
+    @Min(1)
     private Integer pop;
 
-    public CityDto toCityDto() {
-        return CityDto.builder()
+    public City toCity() {
+        return City.builder()
                 .id(id)
                 .name(name)
                 .area(area)
