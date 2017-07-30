@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
     <city id="1" name="sh" area="1" pop="1"/>
-    <city id="2" name="bj" area="2" pop="2"/>
 </dataset>

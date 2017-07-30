@@ -10,12 +10,15 @@ import java.util.List;
 
 public interface CityService {
 
-    City get(String name);
-
-    List<City> getAll();
-
     City add(City city);
 
     City update(City city);
 
+    void delete(Integer id);
+
+    City getById(Integer id);
+
+    City getByName(String name);
+
+    List<City> getAll();
 }

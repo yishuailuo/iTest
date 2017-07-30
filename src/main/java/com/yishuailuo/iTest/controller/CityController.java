@@ -22,7 +22,7 @@ public class CityController {
 
     @GetMapping("/{name}")
     public City getCity(@PathVariable String name) {
-        return cityService.get(name);
+        return cityService.getByName(name);
     }
 
     @GetMapping()
@@ -44,6 +44,11 @@ public class CityController {
             return null;
         }
         return cityService.update(cityDto.toCity());
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteCity(Integer id) {
+        cityService.delete(id);
     }
 
 }

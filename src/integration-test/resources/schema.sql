@@ -1,6 +1,8 @@
 CREATE TABLE `city` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  `desc` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK ID',
+  `name` varchar(255) DEFAULT NULL COMMENT '城市名',
+  `area` int(11) DEFAULT NULL COMMENT '城市面积',
+  `pop` int(11) DEFAULT NULL COMMENT '城市人口',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_NAME` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;

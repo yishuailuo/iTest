@@ -35,7 +35,21 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public City get(String name) {
+    public void delete(Integer id){
+        cityMapper.deleteById(id);
+    }
+
+    @Override
+    public City getById(Integer id) {
+        City city = cityMapper.getById(id);
+        if (null == city) {
+            throw new EntityNotFoundException("NoCity");
+        }
+        return city;
+    }
+
+    @Override
+    public City getByName(String name) {
         City city = cityMapper.getByName(name);
         if (null == city) {
             throw new EntityNotFoundException("NoCity");
