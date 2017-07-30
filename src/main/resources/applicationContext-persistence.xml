@@ -6,10 +6,10 @@
 
     <!-- 配置数据源 -->
     <bean id="dataSource" class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">
-        <property name="driverClassName" value="${mysql.driver}"/>
-        <property name="url" value="${mysql.address.datasource}"/>
-        <property name="username" value="${mysql.username.datasource}"/>
-        <property name="password" value="${mysql.password.datasource}"/>
+        <property name="driverClassName" value="${db.driver}"/>
+        <property name="url" value="${db.address.itest}"/>
+        <property name="username" value="${db.username.itest}"/>
+        <property name="password" value="${db.password.itest}"/>
     </bean>
 
     <!-- 配置会话工厂 -->

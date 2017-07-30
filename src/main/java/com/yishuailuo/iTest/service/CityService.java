@@ -15,6 +15,6 @@ public class CityService {
     private CityMapper cityMapper;
 
     public City get(String name) {
-        return cityMapper.get(name);
+        return cityMapper.getByName(name);
     }
 }

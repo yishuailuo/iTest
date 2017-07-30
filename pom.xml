@@ -14,9 +14,13 @@
         <spring.version>4.3.8.RELEASE</spring.version>
         <fastjson.version>1.2.31</fastjson.version>
         <tomcat.runtime.version>7.0.65</tomcat.runtime.version>
+        <jdk.version>1.7</jdk.version>
         <mysql.version>5.1.38</mysql.version>
         <mybatis.version>3.4.1</mybatis.version>
         <mybatis.spring.version>1.3.1</mybatis.spring.version>
+        <spring.test.dbunit.version>1.2.1</spring.test.dbunit.version>
+        <dbunit.version>2.5.3</dbunit.version>
+        <h2.version>1.4.195</h2.version>
     </properties>
 
     <dependencies>
@@ -73,14 +77,46 @@
         <!-- 数据库连接-->
 
 
-        <!-- 单元测试 -->
+        <!-- 测试 -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- 单元测试 -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.dbunit</groupId>
+            <artifactId>dbunit</artifactId>
+            <version>${dbunit.version}</version>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.springtestdbunit</groupId>
+            <artifactId>spring-test-dbunit</artifactId>
+            <version>${spring.test.dbunit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- 测试 -->
 
         <!-- 代码优化 -->
         <dependency>
@@ -93,6 +129,24 @@
 
     <build>
         <finalName>iTest</finalName>
+        <filters>
+            <!-- 指定配置文件始终从激活的 profile 配置目录中加载 -->
+            <filter>profiles/${build.profile.id}/config.properties</filter>
+        </filters>
+        <resources>
+            <!-- 为资源文件开启过滤 -->
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/java/</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <!-- 配置 maven jdk 编译版本-->
             <plugin>
@@ -100,8 +154,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.7</source> <!-- 源码开发版本 -->
-                    <target>1.7</target> <!-- 目标class文件编译版本 -->
+                    <source>${jdk.version}</source> <!-- 源码开发版本 -->
+                    <target>${jdk.version}</target> <!-- 目标class文件编译版本 -->
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
@@ -110,6 +164,106 @@
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.2</version>
             </plugin>
+
+            <!-- 指定集成测试的源文件和资源文件目录 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.9.1</version>
+                <executions>
+                    <!-- 添加源文件目录 -->
+                    <execution>
+                        <id>add-integration-test-sources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/integration-test/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <!-- 添加资源文件目录 -->
+                    <execution>
+                        <id>add-integration-test-resources</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>add-test-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <filtering>true</filtering>
+                                    <directory>src/integration-test/resources</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--单元测试配置-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.18</version>
+                <configuration>
+                    <argLine>${surefireArgLine}</argLine> <!-- 单元测试在跑时设置 VM argument line -->
+                    <skipTests>${skip.unit.tests}</skipTests> <!-- 是否跳过单元测试 -->
+                    <excludes>
+                        <exclude>**/*ITCase.java</exclude>
+                        <exclude>**/*MapperTest.java</exclude> <!-- 单元测试在跑时，排除集成测试 -->
+                    </excludes>
+                </configuration>
+            </plugin>
+            <!--集成测试配置-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.18</version>
+                <executions>
+                    <execution>
+                        <id>integration-tests</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <skipTests>${skip.integration.tests}</skipTests> <!-- 是否跳过集成测试 -->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
+
+    <profiles>
+        <!-- 开发环境 profile 配置 -->
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault> <!-- 默认使用开发环境 profile 配置 -->
+            </activation>
+            <properties>
+                <!-- build.profile.id 必须与包含 profile 配置文件的目录名相同，这里指定为 dev -->
+                <build.profile.id>dev</build.profile.id>
+                <!-- 启用开发环境 profile 时，只跑单元测试，不跑集成测试 -->
+                <skip.integration.tests>true</skip.integration.tests>
+                <skip.unit.tests>false</skip.unit.tests>
+            </properties>
+        </profile>
+        <!-- 集成环境 profile 配置 -->
+        <profile>
+            <id>integration-test</id>
+            <properties>
+                <!-- build.profile.id 必须与包含 profile 配置文件的目录名相同，这里指定为 integration-test -->
+                <build.profile.id>integration-test</build.profile.id>
+                <!-- 启用集成测试环境 profile 时，只跑集成测试，不跑单元测试 -->
+                <skip.integration.tests>false</skip.integration.tests>
+                <skip.unit.tests>true</skip.unit.tests>
+            </properties>
+        </profile>
+    </profiles>
 </project>
